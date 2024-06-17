@@ -18,10 +18,28 @@ const validateLogin = [
 ];
 
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: '14h', // Token valid for 14 hours
-  });
+const generateToken = (userId , refresh) => {
+  if (refresh){
+    return jwt.sign({ userId }, process.env.JWT_SECRET, {
+      expiresIn: '14h', // Token valid for 14 hours
+    }
+  )}
+  else {
+    return jwt.sign({ userId }, process.env.REFRESH_JWT_SECRET, {
+      expiresIn: '1d', // Token valid for 1d
+    }
+  )
+  }
+  ;
+};
+
+const getUserIdFromToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded.userId;
+  } catch (err) {  
+    return res.status(401).json({ error: 'Invalid Token' });
+  }
 };
 
 const verifyToken = (token) => {
@@ -53,4 +71,4 @@ const validateToken = async (req, res, next) => {
   }
 };
 
-module.exports = { generateToken, verifyToken , validateLogin, validateToken};
+module.exports = { generateToken, verifyToken , validateLogin, validateToken , getUserIdFromToken};

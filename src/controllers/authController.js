@@ -1,9 +1,11 @@
 // src/controllers/authController.js
 const bcrypt = require('bcryptjs');
-const { generateToken } = require('../middleware/auth');
+const { generateToken , getUserIdFromToken} = require('../middleware/auth');
 const { validationResult } = require('express-validator');
 const User = require('../models/User'); // Adjust path as per your structure
 const redis = require('../config/redis');
+const jwt = require('jsonwebtoken');
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -24,10 +26,11 @@ const login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id);
+    const access_token = generateToken(user.id, false);
+    const refresh_token= generateToken(user.id, true);
 
     // Respond with token
-    res.json({ token });
+    res.json({ access_token, refresh_token });
 
   } catch (error) {
     console.error('Login error:', error);
@@ -49,4 +52,22 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { login, logout };
+const refreshToken = async (req,res) =>{
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Access denied. No "refreshToken" provided.' });
+  }
+  else{
+    try{
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET);
+      const access_token = generateToken(decoded, false)
+      res.json({ access_token })
+    }
+    catch(err)
+    {
+      return res.status(400).json({ errors: "Refresh Token has Expired.Please Try Logging in." });
+    }
+  }  
+}
+
+module.exports = { login, logout , refreshToken };
