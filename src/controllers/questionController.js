@@ -3,7 +3,8 @@ const { generateAIAnswer } = require('../services/aiService');
 
 const createQuestion = async (req, res) => {
   const { content } = req.body;
-  const userId = req.user.userId;
+  const userId = req.user.userId.userId;
+  console.log(userId)
 
   try {
     const question = await Question.create({
