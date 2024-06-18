@@ -4,9 +4,15 @@ const User = require('./User');
 
 const Question = sequelize.define('Question', {
   id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  uuid: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    allowNull: false,
+    unique: true
   },
   content: {
     type: DataTypes.TEXT,
@@ -25,6 +31,8 @@ const Question = sequelize.define('Question', {
       key: 'id'
     }
   }
+}, {
+  timestamps: false // Disable automatic createdAt and updatedAt fields
 });
 
 Question.sync();

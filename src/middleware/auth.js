@@ -19,7 +19,7 @@ const validateLogin = [
 
 
 const generateToken = (userId , refresh) => {
-  if (refresh){
+  if (!refresh){
     return jwt.sign({ userId }, process.env.JWT_SECRET, {
       expiresIn: '14h', // Token valid for 14 hours
     }

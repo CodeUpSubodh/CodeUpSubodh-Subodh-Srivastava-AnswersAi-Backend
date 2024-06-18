@@ -1,6 +1,7 @@
 const userService = require('../services/userService');
 const userSerializer = require('../serializers/userSerializer');
 const { body, validationResult } = require('express-validator');
+const Question = require('../models/Questions');
 
 // Controller function to create a user
 async function createUser(req, res) {
@@ -39,7 +40,22 @@ async function getUser(req, res) {
   }
 }
 
+const getUserQuestions = async (req, res) =>{
+  const { userId } = req.params;
+  if (!userId){
+    res.status(400).json({ error: "Invalid User ID" });
+  }
+  const questions = await Question.findAll({
+    where: { userId },
+  });
+  if (!questions) {
+    return res.status(404).json({ error: 'Question not found' });
+  }
+  res.json(questions)
+}
+
 module.exports = {
   createUser,
-  getUser
+  getUser,
+  getUserQuestions
 };

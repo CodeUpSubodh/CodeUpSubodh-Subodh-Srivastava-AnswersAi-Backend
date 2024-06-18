@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
+const {createUser , getUserQuestions , getUser} = require('../controllers/userController');
 const validateUser = require('../middleware/validateUser')
-router.post('/',validateUser ,userController.createUser);
-router.get('/:id', userController.getUser);
+const { validateToken } = require('../middleware/auth')
+
+router.post('/',validateUser ,createUser);
+router.get('/:id', getUser);
+router.get('/:userId/questions',validateToken,getUserQuestions)
 // Define other routes (PUT, DELETE, etc.)
 
 module.exports = router;
