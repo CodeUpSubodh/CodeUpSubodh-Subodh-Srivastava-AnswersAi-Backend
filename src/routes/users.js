@@ -5,7 +5,7 @@ const validateUser = require('../middleware/validateUser')
 const { validateToken } = require('../middleware/auth')
 
 router.post('/',validateUser ,createUser);
-router.get('/:id', getUser);
+router.get('/:id',validateToken,getUser);
 router.get('/:userId/questions',validateToken,getUserQuestions)
 // Define other routes (PUT, DELETE, etc.)
 
